@@ -55,25 +55,7 @@ def outliers(df):
         iqr = q3 - q1
         upper_bound = q3 + (1.5 * iqr)
         lower_bound = q1 - (1.5 * iqr)
-        print(f"{col}: upper = {upper_bound}, lower = {lower_bound}")
-        
-def split_classification(df, target):
-    '''
-    This function takes in a DataFrame and returns *stratified* train, validate, and test DataFrames.
-    ---
-    Format: train, validate, test = function()
-    '''
-    train_validate, test = train_test_split(df, test_size=.2,
-                                        random_state=123, stratify={target})
-    train, validate = train_test_split(train_validate, test_size=.25,
-                                       random_state=123, stratify={target})
-    
-    print(f'Prepared DF: {df.shape}')
-    print(f'Train: {train.shape}')
-    print(f'Validate: {validate.shape}')
-    print(f'Test: {test.shape}')
-    
-    return train, validate, test 
+        print(f"{col}: upper = {upper_bound}, lower = {lower_bound}") 
 
 def split_regression(df):
     '''
@@ -184,11 +166,14 @@ def assign_variables(train, validate, test, target):
     """
     # X_train, y_train, X_validate, y_validate, X_test, and y_test to be used for feature importance/modeling
     variable_list = []
-    X_train = train.drop(columns={target})
+    X_train = train.drop(columns={'date','customer','invoice','profit',\
+                                 'sale_total','total_cost'})
     variable_list.append(X_train)
-    X_validate = validate.drop(columns={target})
+    X_validate = validate.drop(columns={'date','customer','invoice','profit',\
+                                 'sale_total','total_cost'})
     variable_list.append(X_validate)
-    X_test = test.drop(columns={target})
+    X_test = test.drop(columns={'date','customer','invoice','profit',\
+                                 'sale_total','total_cost'})
     variable_list.append(X_test)
     y_train = train[target]
     variable_list.append(y_train)

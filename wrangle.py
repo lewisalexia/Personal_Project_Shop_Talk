@@ -37,7 +37,6 @@ def prep_invoice(df):
     print(f"DataFrame acquired, cleaning...")
     # dropped two first customers with index [-1,0]
     df = df.drop(index=[-1,0])
-    df['invoice'] = df.index.astype(str)
     df = df.reset_index(drop=True)
     
     # changes date column to datetime
@@ -49,9 +48,10 @@ def prep_invoice(df):
     print(f"Dropped percent and amount profit columns")
     
     # runs for loop to change dytpes and round to 2 places
-    for col in df.iloc[:,2:10]:
+    for col in df.iloc[:,2:]:
         df[col] = df[col].str.replace(',','')
         df[col] = df[col].astype(float).round(2)
+    df['invoice'] = df.index.astype(str)
     print(f"Changed remining columns to floats, round to 2")
     print(f"DateFrame cleaned and ready for exploration")
         

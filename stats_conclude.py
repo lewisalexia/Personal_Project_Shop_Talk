@@ -3,6 +3,21 @@ from itertools import combinations
 
 # STATS CONCLUSIONS FUNCTIONS 
 
+def shapiro_test(df_column):
+    """This function performs a shapiro test on a column from a df.
+    If p_value is less than alpha then there is normal distribution.
+    If p_value is greater than alpha then there is NOT normal distribution.
+    """
+    α = 0.05    
+    stat, p = stats.shapiro(df_column)
+    print(f'p-value = {p:.10f} < {α}')
+    print('----')
+    if p < α:
+        print ('Not Normal Distribution')
+    else:
+        print ("Normal Distribution")
+
+
 def chi2_test(table):
     """Goal: ((compare two categorical variables))
     Compare categorical variables testing for correlation.
