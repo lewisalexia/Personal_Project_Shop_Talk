@@ -170,6 +170,42 @@ def minmax_scaler(train_model, validate_model, test_model):
     
 #-------------------------------------------------------------  QUESTIONS ----------------------------------------------------------------------------------    
      
+def plot_1(df, col1, col2):
+    """This function plots question 1 viz"""
+    sns.lmplot(data=df, x=col1, y=col2, sharex=True, sharey=True, size=9, line_kws={'color':'purple'})
+    plt.axhline(df[col2].mean(), color='black', linestyle=':', label='Avg Profit')
+    plt.axvline(df[col1].mean(), color='red', linestyle=':', label='Avg Labor Cost')
+    plt.title('Labor Cost Against Profit')
+    plt.legend();
+    
+def plot_2(df, col1, col2, col3):
+    """This function plots question 2 viz"""
+    sns.lmplot(data=df, x=col1, y=col2, hue=col3, sharex=True, sharey=True, size=9, line_kws={'color':'purple'}, col=col3\
+          ,col_wrap=2)
+    plt.axhline(df[col2].mean(), color='black', linestyle=':', label='Avg Profit')
+    plt.axvline(df[col1].mean(), color='red', linestyle=':', label='Avg Labor Cost')
+    plt.title('Labor Cost Against Profit')
+    plt.legend();
+    
+def plot_3(df, col1, col2):
+    """This function plots question 3 viz"""
+    sns.lmplot(data=df, x=col1, y=col2, sharex=True, sharey=True, size=9, line_kws={'color':'purple'})
+    plt.axvline(df[col1].mean(), color='black', linestyle=':', label='Avg Parts Cost')
+    plt.axhline(df[col2].mean(), color='red', linestyle=':', label='Avg Profit')
+    plt.title('Part Cost Against Profit')
+    plt.legend();
+    
+def plot_4(df, col1, col2, col3):
+    """This function plots question 4 viz"""
+    sns.lmplot(data=df, x=col1, y=col2, hue=col3, sharex=True, sharey=True, size=9, line_kws={'color':'purple'}, col=col3\
+          ,col_wrap=2)
+    plt.axhline(df[col2].mean(), color='black', linestyle=':', label='Avg Profit')
+    plt.axvline(df[col1].mean(), color='red', linestyle=':', label='Avg Parts Cost')
+    plt.title('Parts Cost Against Profit')
+    plt.legend();
+    
+#-------------------------------------------------------------  X_train, etc... ----------------------------------------------------------------------------------    
+    
 def assign_variables(train, validate, test, target):
     """This function takes in the train, validate, and test dataframes and assigns 
     the chosen features to X_train, X_validate, X_test, and y_train, y_validate, 
@@ -179,11 +215,11 @@ def assign_variables(train, validate, test, target):
     """
     # X_train, y_train, X_validate, y_validate, X_test, and y_test to be used for feature importance/modeling
     variable_list = []
-    X_train = train.drop(columns={target})
+    X_train = train.drop(columns={'date','customer','profit_per_part','profit_per_labor','profit'})
     variable_list.append(X_train)
-    X_validate = validate.drop(columns={target})
+    X_validate = validate.drop(columns={'date','customer','profit_per_part','profit_per_labor','profit'})
     variable_list.append(X_validate)
-    X_test = test.drop(columns={target})
+    X_test = test.drop(columns={'date','customer','profit_per_part','profit_per_labor','profit'})
     variable_list.append(X_test)
     y_train = train[target]
     variable_list.append(y_train)
@@ -199,11 +235,11 @@ def assign_reg_variables(train, validate, test, target):
     """
     # X_train, y_train, X_validate, y_validate, X_test, and y_test to be used for feature importance/modeling
     variable_list = []
-    X_train = train.drop(columns={target})
+    X_train = train.drop(columns={'profit_per_part','profit_per_labor', 'profit'})
     variable_list.append(X_train)
-    X_validate = validate.drop(columns={target})
+    X_validate = validate.drop(columns={'profit_per_part','profit_per_labor', 'profit'})
     variable_list.append(X_validate)
-    X_test = test.drop(columns={target})
+    X_test = test.drop(columns={'profit_per_part','profit_per_labor', 'profit'})
     variable_list.append(X_test)
     y_train = train[target]
     variable_list.append(y_train)
