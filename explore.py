@@ -64,21 +64,6 @@ def univariate_desc(df):
         print(f"\n") 
 
 #-------------------------------------------------------------  SPLIT ----------------------------------------------------------------------------------
-
-# def outliers(df):
-#     """This function uses a built-in outlier function using IQR range and 1.5 multiplier
-#     to scientifically identify all outliers in the zillow dataset and then 
-#     print them out for each column.
-#     ---
-#     Format: upper_bound, lower_bound = function()
-#     """
-#     for col in df.columns:
-#         q1 = df[col].quantile(.25)
-#         q3 = df[col].quantile(.75)
-#         iqr = q3 - q1
-#         upper_bound = q3 + (1.5 * iqr)
-#         lower_bound = q1 - (1.5 * iqr)
-#         print(f"{col}: upper = {upper_bound}, lower = {lower_bound}")
         
 def split_classification(df, target):
     '''
@@ -182,34 +167,9 @@ def minmax_scaler(train_model, validate_model, test_model):
     test_model_scaled = pd.DataFrame(test_model_scaled, columns=test_model.columns)
     
     return train_model_scaled, validate_model_scaled, test_model_scaled
-
-# def robust_scaler(train, validate, test):
-#     """This functions takes in the train, validate, test df's, creates the robust scaler, fits it to train,
-#     uses it on train, validate, and test df's. Returns two graphs, one of the 
-#     original and one of the scaled data."""
-#     scaler = RobustScaler()
-#     # fit
-#     scaler.fit(train)
-#     # use
-#     train_robust_scaled = scaler.transform(train)
-#     validate_robust_scaled = scaler.transform(validate)
-#     test_robust_scaled = scaler.transform(test)
-#     # viz
-#     plt.figure(figsize=(13, 6))
-#     plt.subplot(121)
-#     plt.hist(train, bins=25, ec='black')
-#     plt.title('Original')
-#     plt.subplot(122)
-#     plt.hist(train_robust_scaled, bins=25, ec='black')
-#     plt.title('Scaled'); 
     
 #-------------------------------------------------------------  QUESTIONS ----------------------------------------------------------------------------------    
-    
-def plot_1(df, col1, col2):
-    """
-    """
-    
-    
+     
 def assign_variables(train, validate, test, target):
     """This function takes in the train, validate, and test dataframes and assigns 
     the chosen features to X_train, X_validate, X_test, and y_train, y_validate, 
@@ -281,73 +241,4 @@ def univariate_hist(df):
                 top=1.5, 
                 wspace=0.6, 
                 hspace=0.6)
-    plt.show()
-    
-
-    
-    
-def total_monthly(df):
-    """This function displays monthly charges causing churn as they increase.
-    """
-    sns.scatterplot(data=df, x=df.monthly_charges, \
-    y=df.total_charges, hue=df.churn)
-    plt.axvline(x=df.monthly_charges.mean(), label='Average Monthly Charge', color='red', linewidth=2)
-    plt.title('High Monthly Charges Creates Churn')
-    plt.legend()
-    plt.show()
-
-
-
-def box_plot_monthly_multiple(df):
-    """This function displays that mean monthly charges are higher for churned
-    customers with and without multiple lines but ESPECIALLY for multiple line
-    customers.
-    """
-    sns.boxplot(x=df.multiple_lines, \
-                y=df.monthly_charges, hue=df.churn)
-    plt.title('Houston, We Have a Problem...')
-    plt.axhline(y=df.monthly_charges.mean(), label='Average Monthly Charge', color='red', linewidth=2)
-    plt.xticks([0, 1], ['No', 'Yes'])
-    plt.legend([0, 1], ['No', 'Yes'])
-    plt.show()
-
-
-def phone_fiber(df):
-    """This function displays that all fiber customers have phone service.
-    """
-    sns.barplot(data=df, x='phone_service', y='internet_service_type_Fiber optic')
-    plt.title('All Fiber Customers Have Phone Service')
-    plt.xticks([0, 1], ['No', 'Yes'])
-    plt.ylabel('Fiber Internet')
-    plt.xlabel('Phone Service')
-    plt.show()
-
-def monthly_phone_churn(df):
-    """This function displays the churn rate of customers with one or more lines of phone
-    service.
-    """
-    sns.barplot(data=df, x='churn', \
-    y='contract_type', hue='multiple_lines')
-    plt.axvline(x=df['churn'].mean(), label='Average Churn Rate', color='red', linewidth=2)
-    plt.title('Phone Contracts Well Above Average Churn Rate')
-    plt.legend()
-    plt.show()
-
-
-def fiber_average_cost(df):
-    """This function displays churn customers being charged more than average monthly price.
-    """
-    sns.scatterplot(data=df, x='monthly_charges', y='total_charges', hue='phone_service')
-    plt.axvline(x=df['monthly_charges'].mean(), label='Average Churn Rate', color='red', linewidth=2)
-    plt.title('There Is Wiggle Room To Reduce Price')
-    plt.show()
-
-def monthly_contract(df):
-    """This function displays the slope of charge for phone customers. The purpose is to
-    show there is room to level the price.
-    """
-    sns.scatterplot(data=df, x='monthly_charges', y='total_charges', hue='contract_type')
-    plt.title('Monthly Contracts Make Up Majority of Customer Base')
-    plt.xlabel('Monthly Charges')
-    plt.ylabel('Total Charges')
     plt.show()

@@ -459,11 +459,17 @@ def all_3_regression(X_train_r, y_train_r, X_validate_r, y_validate_r, X_test_r,
     plot_model_actual_predicted(y_test_r,pred_test_lars)
     
     return metrics_df
-    
-
-
 
 # ---- VIZZES
+
+def plot_target(df, col1):
+    """This function plots the target variable"""
+    # plot the target variable
+    plt.figure(figsize=(10, 10))
+    sns.histplot(df[col1], bins=60, color='purple')
+    plt.axvline(df[col1].mean(), label='Average Profit', color='black', linewidth=2)
+    plt.legend()
+    plt.title('Distribution of Target Variable: Profit');
 
 def plot_model_predictions(p1, p2, p3, y, baseline):
     """Plots the selected models predictions with baseline"""
