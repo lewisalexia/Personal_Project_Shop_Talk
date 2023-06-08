@@ -46,9 +46,35 @@ My initial thoughts were correct! Parts and labor sales would affect profit the 
             * Diving deeper from the previous question
     
 * Model
-    * 
+    * **Features to send in:**<br>
+    Classification:
+    * labor_cost
+    * labor_sale
+    * parts_sale
+    * parts_cost
 
-* Conclusions
+    Regression:
+    * labor_cost
+    * labor_sale
+    * parts_sale
+    * parts_cost
+
+    ***Dropped profit_per_part and profit_per_labor features used for exploration***
+
+    **Models Selected:**<br>
+
+    Classification:
+    * KNN
+    * Decision Tree
+    * Random Forest
+    * Logisitic Regression
+
+    Regression:
+    * OLS (Linear Regression)
+    * LassoLars
+    * GLM (Tweedie)
+
+    * Conclusions
 
 # Data Dictionary  
 
@@ -70,6 +96,8 @@ My initial thoughts were correct! Parts and labor sales would affect profit the 
 1. Clone this repo
 2. Run notebook
 
+---
+
 # Takeaways
 
 Explore takeaways pointed at some interesting variations presenting when the profits got higher:
@@ -88,35 +116,6 @@ Explore takeaways pointed at some interesting variations presenting when the pro
 
 Modeling:
 
-**Features to send in:**<br>
-Classification:
-* labor_cost
-* labor_sale
-* parts_sale
-* parts_cost
-
-Regression:
-* labor_cost
-* labor_sale
-* parts_sale
-* parts_cost
-
-***Dropped profit_per_part and profit_per_labor features used for exploration***
-
-**Models Selected:**<br>
-
-Classification:
-* KNN
-* Decision Tree
-* Random Forest
-* Logisitic Regression
-
-Regression:
-* OLS (Linear Regression)
-* LassoLars
-* GLM (Tweedie)
-
----
 * **Classification**
     * Accuracy is the metric
     * Target is profit_size
