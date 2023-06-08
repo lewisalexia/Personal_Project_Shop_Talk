@@ -33,29 +33,70 @@ from scipy import stats
 
 import warnings
 warnings.filterwarnings("ignore")
-    
-#-------------------------------------------------------------  DESCRIPTIVES AND SPLIT ----------------------------------------------------------------------------------
 
+
+# ------------------------------------------------------- Univariate Exploration --------------------------------------------------------------------------------
+
+def univariate_hist(df):
+    """This function takes in a df and returns Seaborn histplots on all columns"""
+    plt.figure(figsize=(12,6))
+   
+    for i, col in enumerate(df.columns):
+        plt.tight_layout(pad=3.0)
+        plot_number = i + 1
+        plt.subplot(6,2, plot_number)
+        sns.histplot(df[col], bins=20)
+        plt.title(f"{col.replace('_',' ')}") 
+        plt.xticks(rotation=45)
+
+    plt.subplots_adjust(left=0.1,
+                bottom=0, 
+                right=0.9, 
+                top=3, 
+                wspace=0.6, 
+                hspace=0.6)
+    plt.show()
+    
 def univariate_desc(df):
     """This function takes in a df and returns descriptive analysis on numerical columns"""
     for col in df.columns:
         print(df[col].describe())
-        print(f"\n")        
+        print(f"\n") 
+
+#-------------------------------------------------------------  SPLIT ----------------------------------------------------------------------------------
+
+# def outliers(df):
+#     """This function uses a built-in outlier function using IQR range and 1.5 multiplier
+#     to scientifically identify all outliers in the zillow dataset and then 
+#     print them out for each column.
+#     ---
+#     Format: upper_bound, lower_bound = function()
+#     """
+#     for col in df.columns:
+#         q1 = df[col].quantile(.25)
+#         q3 = df[col].quantile(.75)
+#         iqr = q3 - q1
+#         upper_bound = q3 + (1.5 * iqr)
+#         lower_bound = q1 - (1.5 * iqr)
+#         print(f"{col}: upper = {upper_bound}, lower = {lower_bound}")
         
-def outliers(df):
-    """This function uses a built-in outlier function using IQR range and 1.5 multiplier
-    to scientifically identify all outliers in the zillow dataset and then 
-    print them out for each column.
+def split_classification(df, target):
+    '''
+    This function takes in a DataFrame and returns train, validate, and test DataFrames.
     ---
-    Format: upper_bound, lower_bound = function()
-    """
-    for col in df.columns:
-        q1 = df[col].quantile(.25)
-        q3 = df[col].quantile(.75)
-        iqr = q3 - q1
-        upper_bound = q3 + (1.5 * iqr)
-        lower_bound = q1 - (1.5 * iqr)
-        print(f"{col}: upper = {upper_bound}, lower = {lower_bound}") 
+    Format: train, validate, test = function()
+    '''
+    train_validate, test = train_test_split(df, test_size=.2,
+                                        random_state=123, stratify=df[target])
+    train, validate = train_test_split(train_validate, test_size=.25,
+                                       random_state=123, stratify=train_validate[target])
+    
+    print(f'Prepared DF: {df.shape}')
+    print(f'Train: {train.shape}')
+    print(f'Validate: {validate.shape}')
+    print(f'Test: {test.shape}')
+    
+    return train, validate, test 
 
 def split_regression(df):
     '''
@@ -68,94 +109,106 @@ def split_regression(df):
     train, validate = train_test_split(train_validate, test_size=.25,
                                        random_state=123)
     
+    train.drop(columns={'date','customer','profit_size'}, inplace=True)
+    validate.drop(columns={'date','customer','profit_size'}, inplace=True)
+    test.drop(columns={'date','customer','profit_size'}, inplace=True)
+    
     print(f'Prepared DF: {df.shape}')
     print(f'Train: {train.shape}')
     print(f'Validate: {validate.shape}')
     print(f'Test: {test.shape}')
     
-    return train, validate, test 
+    return train, validate, test
 
-def remove_model_outliers(df):
-    """This function takes in a df and removes the outliers using IQR and default multiplier of 1.5
-    returning a clean df
+#-------------------------------------------------------------  ENCODE ----------------------------------------------------------------------------------
+
+def encode_classification(df):
+    """This function encodes the categorical column for project shop talk
+    and reorders the columns.
     ---
     Format: df = function()
     """
-    col_cat = [] #this is for my categorical varibles
-    col_num = [] #this is for my numerical varibles
+    dummy_df = pd.get_dummies(df[['profit_size']], dummy_na=False, drop_first=True)
+    df_encoded = pd.concat([dummy_df, df], axis=1)
 
-    for col in df.columns:
-        if col in df.select_dtypes(include=['int64', 'float64']):
-            col_num.append(col)
-        else:
-            col_cat.append(col)
+    # reorders columns
+    df_encoded = df_encoded[[
+                         'date',
+                         'customer',
+                         'parts_cost',
+                         'labor_cost',
+                         'parts_sale',
+                         'labor_sale',
+                         'profit_per_part',
+                         'profit_per_labor',
+                         'profit',
+                         'profit_size',
+                         'profit_size_medium',
+                         'profit_size_large']]
+    
+    return df_encoded
 
-    for col in col_cat:
-        print(f"{col.capitalize().replace('_',' ')} is excluded from this function.")
-    print(f'-----------------------------------------')
+#-------------------------------------------------------------  SCALE ----------------------------------------------------------------------------------
 
-    print(f'Outliers Calculated with IQR Ranges, multiplier 1.5')
-    for col in col_num:
-        q1 = df[col].quantile(.25)
-        q3 = df[col].quantile(.75)
-        iqr = q3 - q1
-        upper_bound = q3 + (1.5 * iqr)
-        lower_bound = q1 - (1.5 * iqr)
-        print(f"{col.capitalize().replace('_', ' ')} between {lower_bound.round(2)} and {upper_bound.round(2)}") 
-        df_clean = df[(df[col] < upper_bound) & (df[col] > lower_bound)] 
-        
-    print(f"\nOutliers Removed: Percent Original Data Remaining: {round(df_clean.shape[0]/df.shape[0]*100,0)}\n")
-    return df_clean
-
-def standard_scaler(train, validate, test):
-    """This functions takes in the train, validate, test df's, creates the standard scaler, fits it to train,
+def minmax_scaler(train_model, validate_model, test_model):
+    """This functions takes in the train, validate, test df's, creates the minmax scaler, fits it to train,
     uses it on train, validate, and test df's. Returns two graphs, one of the 
     original and one of the scaled data.
     ---
-    Format: train_std_scaled, validate_robust_scaled, test_std_scaled = function()
+    Format: train_model_scaled, validate_model_scaled, test_model_scaled = function()
     """
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
+    
     # fit
-    scaler.fit(train)
+    scaler.fit(train_model)
+    
     # use
-    train_std_scaled = scaler.transform(train)
-    validate_std_scaled = scaler.transform(validate)
-    test_std_scaled = scaler.transform(test)
+    train_model_scaled = scaler.transform(train_model)
+    validate_model_scaled = scaler.transform(validate_model)
+    test_model_scaled = scaler.transform(test_model)
+
     # viz
     plt.figure(figsize=(13, 6))
     plt.subplot(121)
-    plt.hist(train, bins=25, ec='black')
-    plt.title('Original')
+    plt.hist(train_model, ec='black')
+    plt.title('Original Data')
     plt.subplot(122)
-    plt.hist(train_std_scaled, bins=25, ec='black')
-    plt.title('Scaled');
+    plt.hist(train_model_scaled, ec='black')
+    plt.title('Scaled Data');
     
     # returns array - make into DF
-    train_std_scaled = pd.DataFrame(train_std_scaled, columns=train.columns)
-    validate_std_scaled = pd.DataFrame(validate_std_scaled, columns=validate.columns)
-    test_std_scaled = pd.DataFrame(test_std_scaled, columns=test.columns)
+    train_model_scaled = pd.DataFrame(train_model_scaled, columns=train_model.columns)
+    validate_model_scaled = pd.DataFrame(validate_model_scaled, columns=validate_model.columns)
+    test_model_scaled = pd.DataFrame(test_model_scaled, columns=test_model.columns)
     
-    return train_std_scaled, validate_std_scaled, test_std_scaled
+    return train_model_scaled, validate_model_scaled, test_model_scaled
 
-def robust_scaler(train, validate, test):
-    """This functions takes in the train, validate, test df's, creates the robust scaler, fits it to train,
-    uses it on train, validate, and test df's. Returns two graphs, one of the 
-    original and one of the scaled data."""
-    scaler = RobustScaler()
-    # fit
-    scaler.fit(train)
-    # use
-    train_robust_scaled = scaler.transform(train)
-    validate_robust_scaled = scaler.transform(validate)
-    test_robust_scaled = scaler.transform(test)
-    # viz
-    plt.figure(figsize=(13, 6))
-    plt.subplot(121)
-    plt.hist(train, bins=25, ec='black')
-    plt.title('Original')
-    plt.subplot(122)
-    plt.hist(train_robust_scaled, bins=25, ec='black')
-    plt.title('Scaled'); 
+# def robust_scaler(train, validate, test):
+#     """This functions takes in the train, validate, test df's, creates the robust scaler, fits it to train,
+#     uses it on train, validate, and test df's. Returns two graphs, one of the 
+#     original and one of the scaled data."""
+#     scaler = RobustScaler()
+#     # fit
+#     scaler.fit(train)
+#     # use
+#     train_robust_scaled = scaler.transform(train)
+#     validate_robust_scaled = scaler.transform(validate)
+#     test_robust_scaled = scaler.transform(test)
+#     # viz
+#     plt.figure(figsize=(13, 6))
+#     plt.subplot(121)
+#     plt.hist(train, bins=25, ec='black')
+#     plt.title('Original')
+#     plt.subplot(122)
+#     plt.hist(train_robust_scaled, bins=25, ec='black')
+#     plt.title('Scaled'); 
+    
+#-------------------------------------------------------------  QUESTIONS ----------------------------------------------------------------------------------    
+    
+def plot_1(df, col1, col2):
+    """
+    """
+    
     
 def assign_variables(train, validate, test, target):
     """This function takes in the train, validate, and test dataframes and assigns 
@@ -166,14 +219,31 @@ def assign_variables(train, validate, test, target):
     """
     # X_train, y_train, X_validate, y_validate, X_test, and y_test to be used for feature importance/modeling
     variable_list = []
-    X_train = train.drop(columns={'date','customer','invoice','profit',\
-                                 'sale_total','total_cost'})
+    X_train = train.drop(columns={target})
     variable_list.append(X_train)
-    X_validate = validate.drop(columns={'date','customer','invoice','profit',\
-                                 'sale_total','total_cost'})
+    X_validate = validate.drop(columns={target})
     variable_list.append(X_validate)
-    X_test = test.drop(columns={'date','customer','invoice','profit',\
-                                 'sale_total','total_cost'})
+    X_test = test.drop(columns={target})
+    variable_list.append(X_test)
+    y_train = train[target]
+    variable_list.append(y_train)
+    y_validate = validate[target]
+    variable_list.append(y_validate)
+    y_test = test[target]
+    variable_list.append(y_test)
+
+    return variable_list
+
+def assign_reg_variables(train, validate, test, target):
+    """
+    """
+    # X_train, y_train, X_validate, y_validate, X_test, and y_test to be used for feature importance/modeling
+    variable_list = []
+    X_train = train.drop(columns={target})
+    variable_list.append(X_train)
+    X_validate = validate.drop(columns={target})
+    variable_list.append(X_validate)
+    X_test = test.drop(columns={target})
     variable_list.append(X_test)
     y_train = train[target]
     variable_list.append(y_train)
