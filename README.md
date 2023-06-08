@@ -169,9 +169,9 @@ From all three iterations, this being the final, I noticed a trend of undercharg
 
 # Recommendation
     
-* For the data scientists: Add outliers back in to beef up the data set.
+* For the data scientists: Add outliers back in to beef up the data set and see how it performs. I expect the model to perform well on future data and look forward to the next steps to provide that for the customer.
     
-* For the business: Recommend waiting for next steps to be completed before proceeding.
+* For the business: Recommend waiting for next steps to be completed before proceeding. The business is well in the green, it's safe to wait for additional analysis to be finished before raising costs.
     
 # Next Steps:
     
