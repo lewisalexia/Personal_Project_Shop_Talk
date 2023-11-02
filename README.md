@@ -125,7 +125,7 @@ Modeling:
         * 95% Validate
     * Decision Tree, depth 2
         * 91% Train
-        * 95* Validate
+        * 95% Validate
     * Random Forest, depth 1
         * 91% Train
         * 95% Validate
