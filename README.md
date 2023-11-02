@@ -145,7 +145,7 @@ Classification overfit on every model except for KNN possibly providing a decent
     * RMSE and R2 are the metrics
     * Target is profit
     * ***Baseline RMSE: $280.59***
-    * ***Baseline R2:   0***
+    * ***Baseline R2:   0.0***
 
     * OLS Standard Linear Regression:
         * $72.53
@@ -156,13 +156,14 @@ Classification overfit on every model except for KNN possibly providing a decent
     * GLM:
         * $12.74
         * 100
+            * Overfit
         
-***LassoLars Model selected to test over all models created - performed great on test! RMSE of 70.42 and an R2 of .93***
+***LassoLars Model selected to test over all models created - performed great on test! RMSE of 65.29 and an R2 of .93***
     
 ---
 
 ***Overall Takeaways:***
-From all three iterations, this being the final, I noticed a trend of undercharging for parts and labor. From iterations one and two, I discovered that average part sales are 9.54 too low (iteration one) and that labor charges are 15.23 too low (iteration two).
+From all three iterations, this being the final, I noticed a trend of undercharging for parts and labor. From iterations one and two, I discovered that average part sales are 9.54 too low (iteration one) and that labor charges are 15.23 too low (iteration two). I came to these conclusions with the help of some hefty domain knowledge.
     * I got to these numbers by taking the averages between iterations given different scenarios. The industry markup average is 100% for parts sales and other shops in the valley charge closer to 130 per labor hour.
     
 - Of note: parts cost after ~$1,100 saw a significant drop in parts sale, almost like someone is a good guy and giving out discounts... :)
