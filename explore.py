@@ -35,7 +35,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# ------------------------------------------------------- Univariate Exploration --------------------------------------------------------------------------------
+# ------------------------------------------------------- UNIVARIATE EXPLORATION --------------------------------------------------------------------------------
 
 def univariate_hist(df):
     """This function takes in a df and returns Seaborn histplots on all columns"""

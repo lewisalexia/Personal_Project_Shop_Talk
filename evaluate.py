@@ -1,34 +1,32 @@
-#Imports
-#import warnings
-import warnings
-warnings.filterwarnings("ignore")
-
-#import libraries
+#standard imports
 import pandas as pd
 import numpy as np
 
-#import visualization tools
+#vizzes
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-#import dataset
-from pydataset import data
-
-#sklearn imports
-from sklearn.linear_model import LinearRegression, LassoLars, TweedieRegressor
-from sklearn.feature_selection import RFE, SelectKBest, f_regression
-from sklearn.preprocessing import MinMaxScaler
+#preprocessing imports
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+
+#classification imports
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+
+#regression imports
+from sklearn.linear_model import LinearRegression, LassoLars, TweedieRegressor
+from sklearn.feature_selection import RFE, SelectKBest, f_regression
 from sklearn.metrics import mean_squared_error, r2_score
 
+#ignore warnings
+import warnings
+warnings.filterwarnings("ignore")
 
-
-# -- Feature Selection
+#------------------------------------------------------------- EVALUATE -------------------------------------------------------------
 
 def select_kbest(X, y, k=2):
     '''
@@ -345,6 +343,34 @@ def all_4_classifiers(X_train, y_train, X_validate, y_validate, nn, baseline_acc
     
 #     return performance
 
+def logit_evaluate(x_df, y_s):
+    """
+    This function takes in a DataFrame (train, validate, test) and
+    applies a plain Logistic Regression model with no hyperparameters set 
+    outside of default.
+    """
+    #create it
+    logit = LogisticRegression(random_state=123)
+
+    #fit it
+    logit.fit(x_df, y_s)
+
+    #use it
+    score = logit.score(x_df, y_s)
+    print(f"The model's accuracy is {round(score,2)}")
+    
+    #establish series from array of coefficients to print
+    coef = logit.coef_
+    
+    #baseline
+    baseline_accuracy = (y_s == 0).mean()
+    print(f"The baseline accuracy is {round(baseline_accuracy,2)}.")
+
+    #classification report
+    print(classification_report(y_s, logit.predict(x_df)))
+
+    #coef & corresponding columns
+    print(f"The coefficents for features are: {coef.round(2)}.\nThe corresponding columns are {x_df.columns.tolist()}.")
 
 # --- Regression
 
@@ -460,7 +486,7 @@ def all_3_regression(X_train_r, y_train_r, X_validate_r, y_validate_r, X_test_r,
     
     return metrics_df
 
-# ---- VIZZES
+#------------------------------------------------------------- VIZZES -------------------------------------------------------------
 
 def plot_target(df, col1):
     """This function plots the target variable"""
